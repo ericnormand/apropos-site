@@ -78,7 +78,9 @@ export default function Home({ episode }) {
         </div>
         <div>{parseDate(episode.date)}</div>
         <div
-          dangerouslySetInnerHTML={{ __html: htmlize(episode.description) }}
+          dangerouslySetInnerHTML={{
+            __html: htmlize(episode.description || ""),
+          }}
         ></div>
       </main>
     </>
