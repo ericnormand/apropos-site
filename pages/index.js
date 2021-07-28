@@ -58,6 +58,10 @@ export default function Home({ episodes }) {
             <a href="https://twitter.com/AproposClj​">Twitter</a> - Random
             announcements
           </li>
+          <li>
+            <a href="https://liberapay.com/Apropos-Clojure">Librepay</a> -
+            Donate Dollars or Euros to help us with the costs of the show.
+          </li>
         </ul>
         <h2>Past episodes</h2>
         {reverse(
