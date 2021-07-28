@@ -51,7 +51,7 @@ export default function Home({ episodes }) {
         </p>
         <ul>
           <li>
-            <a href="https://discord.gg/xEsH53Ey">Discord</a> - Watch and chat
+            <a href="https://discord.gg/hgxAyQaeuX">Discord</a> - Watch and chat
             live
           </li>
           <li>
