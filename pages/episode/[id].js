@@ -31,6 +31,7 @@ export async function getStaticProps({ params }) {
 }
 
 function VimeoEmbed({ id }) {
+  if (!id) return <p>Video Coming Soon</p>;
   return (
     <iframe
       src={`https://player.vimeo.com/video/${id}`}
