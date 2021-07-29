@@ -1,27 +1,28 @@
 import Head from "next/head";
 
 export async function getStaticPaths() {
-  const fs = require("fs");
-  const { join } = require("path");
-  const episodesPath = join(process.cwd(), "data", "episodes.json");
-  const fileContents = fs.readFileSync(episodesPath, "utf8");
-  const episodes = JSON.parse(fileContents);
+  const globby = require("globby");
+  const jsonpaths = await globby(["data/episodes/*.json5"]);
+
+  const paths = jsonpaths
+    .map((path) => path.replace(/data\/episodes\//, "").replace(".json5", ""))
+    .map((id) => ({ params: { id } }));
 
   return {
-    paths: episodes.map((_, i) => ({ params: { id: `${i + 1}` } })),
+    paths,
     fallback: false,
   };
 }
 
 export async function getStaticProps({ params }) {
   const id = params.id;
-  const fs = require("fs");
-  const { join } = require("path");
-  const episodesPath = join(process.cwd(), "data", "episodes.json");
-  const fileContents = fs.readFileSync(episodesPath, "utf8");
-  const episodes = JSON.parse(fileContents);
 
-  const episode = episodes[id - 1];
+  const fs = require("fs");
+  const JSON5 = require("json5");
+
+  const fileContents = fs.readFileSync(`data/episodes/${id}.json5`, "utf8");
+  const episode = JSON5.parse(fileContents);
+
   return {
     props: {
       episode,

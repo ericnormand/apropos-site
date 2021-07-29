@@ -3,14 +3,22 @@ import Image from "next/image";
 
 export async function getStaticProps({ params }) {
   const fs = require("fs");
-  const { join } = require("path");
-  const episodesPath = join(process.cwd(), "data", "episodes.json");
-  const fileContents = fs.readFileSync(episodesPath, "utf8");
-  const episodes = JSON.parse(fileContents);
+  const globby = require("globby");
+  const jsonpaths = await globby(["data/episodes/*.json5"]);
+
+  const episodes = {};
+
+  jsonpaths.forEach((path) => {
+    const id = path.replace(/data\/episodes\//, "").replace(".json5", "");
+    const fileContents = fs.readFileSync(path, "utf8");
+    const episode = JSON5.parse(fileContents);
+    episode.id = id;
+    episodes[id] = episode;
+  });
 
   return {
     props: {
-      episodes: episodes,
+      episodes,
       devMode: process.env.NODE_ENV === "development",
     },
   };
@@ -34,6 +42,14 @@ function htmlize(s) {
 }
 
 export default function Home({ episodes }) {
+  const episodeOrder = Object.keys(episodes).map((id) => episodes[id]);
+  episodeOrder.sort((a, b) => {
+    if (a.id < b.id) return -1;
+    if (a.id > b.id) return 1;
+    return 0;
+  });
+  episodeOrder.reverse();
+
   return (
     <>
       <Head>
@@ -64,20 +80,18 @@ export default function Home({ episodes }) {
           </li>
         </ul>
         <h2>Past episodes</h2>
-        {reverse(
-          episodes.map((episode, i) => (
-            <div key={episode.title} className="border-t">
-              <a href={`/episode/${i + 1}`}>
-                <h3 className="">{episode.title}</h3>
-              </a>
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: htmlize(episode.description || ""),
-                }}
-              />
-            </div>
-          ))
-        )}
+        {episodeOrder.map((episode) => (
+          <div key={episode.title} className="border-t">
+            <a href={`/episode/${episode.id}`}>
+              <h3 className="">{episode.title}</h3>
+            </a>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: htmlize(episode.description || ""),
+              }}
+            />
+          </div>
+        ))}
       </main>
     </>
   );
